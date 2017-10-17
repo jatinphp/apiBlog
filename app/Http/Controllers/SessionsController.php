@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\User;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
+
 
 class SessionsController extends Controller
 {
@@ -40,17 +43,28 @@ class SessionsController extends Controller
      */
     public function store(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $guzzle = new Client();
 
-        if (Hash::check($request->password, $user->password)) {
-                auth()->login($user);
-                return redirect('/');
+        //$post_data = ['email'=>$request->email,'password'=>$request->password];
+        $myBody['email'] = $request->email;
+        $myBody['password'] = $request->password;
+        $response = $guzzle->post('http://localhost:8887/api/login', ['query' =>['api_token' => 'A7jHvdqnbZtiFFrlOXvVeELX7CQoGfXTHlc9kEnlvKyfhfDdBTsHGxRsQy3r'],'form_params'=>$myBody]);
+        $resposed =  json_decode($response->getBody()->getContents());
 
+        if($resposed->status == 'success'){
+            $userdata = [
+                'email'=>$resposed->user->email,
+                'password'=>$request->password,
+                'name'=>$resposed->user->name,
+                'api_token' => $resposed->user->api_token
+            ];
+            Auth::guard('api')->attempt($userdata);
+            return redirect('/');
         }
-
         return back()->withErrors([
             'message' => 'Please Check your credentials and try again!'
         ]);
+
     }
 
     /**

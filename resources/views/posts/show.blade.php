@@ -11,13 +11,6 @@
                     <h2 class="blog-post-title">{{ $post->title }}
 
                     </h2>
-                    @if(count($post->tags))
-                           <ul class="list-inline">
-                               @foreach($post->tags as $tag)
-                                   <li class="list-inline-item"><a href="{{url('/posts/tags/'.$tag->name)}}">{{$tag->name}}, </a> </li>
-                               @endforeach
-                           </ul>
-                    @endif
                     <p class="blog-post-meta">By {{ $post->users->name }} on {{ Carbon\Carbon::parse($post->created_at)->format('d F,Y') }}
                         @if(auth()->id() == $post->users_id)
                                <a class="btn-sm " href="{{url('posts/'.$post->id.'/edit')}}">Edit</a>
@@ -47,7 +40,7 @@
 
                 </div>
                 <hr>
-                @if(auth()->check())
+                @if(auth()->guard('api')->check())
                 <div class="card">
                     <div class="card-body">
                          <form method="POST" action="{{url('/posts/'.$post->id.'/comments')}}">

@@ -14,17 +14,18 @@
 
 Route::get('/', 'PostsController@index')->name('home');
 Route::get('/posts/create', 'PostsController@create');
-Route::get('/register', 'RegistrationController@create');
+//Route::get('/register', 'RegistrationController@create');
 Route::get('/login', 'SessionsController@create');
-Route::get('/logout', 'SessionsController@destroy');
+
+/*Route::get('/logout', 'SessionsController@destroy');
 Route::get('/posts/tags/{tag}', 'TagsController@index');
 Route::get('/posts/edit/{post}', 'PostsController@edit');
 Route::post('/posts/{id}/edit', 'PostsController@update');
-Route::post('/login', 'SessionsController@store');
 Route::post('/register', 'RegistrationController@store');
 Route::post('/posts', 'PostsController@store');
-Route::post('/posts/{post}/comments', 'CommentsController@store');
-Route::get('/tasks', 'TasksController@index');
 
+Route::get('/tasks', 'TasksController@index');*/
+Route::post('/login', 'SessionsController@store');
 Route::get('/posts/{post}', 'PostsController@show');
-Route::get('/tasks/{task}', 'TasksController@show');
+Route::post('/posts/{post}/comments', 'CommentsController@store');
+//Route::get('/tasks/{task}', 'TasksController@show');

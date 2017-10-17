@@ -15,7 +15,7 @@ class PostsController extends Controller
     public function __construct()
     {
 
-        $this->middleware('auth')->except(['index','show']);
+        $this->middleware('auth:api')->except(['index','show']);
     }
 
     public function index()
@@ -30,7 +30,10 @@ class PostsController extends Controller
 
     public function show($id)
     {
-        $post = Posts::find($id);
+        $guzzle = new Client();
+        $res = $guzzle->request('GET','http://localhost:8887/api/post/'.$id, ['query' =>['api_token' => auth()->guard('api')->user()->api_token]]);
+
+        $post = json_decode($res->getBody()->getContents());
         return view('posts.show', compact('post'));
     }
 
@@ -54,28 +57,42 @@ class PostsController extends Controller
 
     public function store(Request $request){
 
+        $guzzle = new Client();
 
-        $this->validate($request,[
-            'title'=> 'required|unique:posts|max:255',
-            'body' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-        $input['imagename'] = '';
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $input['imagename'] = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/images');
-            $image->move($destinationPath, $input['imagename']);
+        if(auth()->guard('api')->check()){
+            $this->validate($request,[
+                'title'=> 'required|unique:posts|max:255',
+                'body' => 'required',
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+            $input['imagename'] = '';
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $input['imagename'] = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $input['imagename']);
+            }
+
+            $postsData = [
+                "title"=> $request->title,
+                "body"=> $request->body,
+                "image"=> $input['imagename'],
+                "_token"=> $request->_token,
+                "users_id"=> auth()->guard('api')->id()
+            ];
+
+            $response = $guzzle->post('http://localhost:8887/api/post', ['query' =>['api_token' => auth()->guard('api')->user()->api_token],'form_params'=>$postsData]);
+            $resposed =  json_decode($response->getBody()->getContents());
+
+            if($resposed->status == 'success'){
+                return redirect('/');
+            }
         }
-
-        Posts::create([
-            "title"=> $request->title,
-            "body"=> $request->body,
-            "image"=> $input['imagename'],
-            "users_id"=> auth()->id()
+        return back()->withErrors([
+            'message' => 'Please Check your credentials and try again!'
         ]);
-        return redirect('/');
     }
+
     public function update(Request $request, $id)
     {
         Posts::where('id', $id)->update(["title"=>$request->title,"body"=>$request->body]);

@@ -4,9 +4,9 @@
             <a class="nav-link active" href="{{url('/')}}">Home</a>
 
 
-            @if(Auth::check())
+            @if(Auth::guard('api')->check())
                 <a class="nav-link" href="{{url('posts/create')}}">Publish Blog</a>
-            <a class="nav-link ml-auto" href="#">{{ Auth::user()->name }}</a>
+            <a class="nav-link ml-auto" href="#">{{ Auth::guard('api')->user()->name }}</a>
                 <a class="nav-link " href="{{url('/logout')}}">Logout</a>
             @else
                 <a class="nav-link ml-auto" href="{{url('/register')}}">Register</a>
