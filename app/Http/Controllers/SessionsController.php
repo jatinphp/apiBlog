@@ -109,7 +109,7 @@ class SessionsController extends Controller
      */
     public function destroy()
     {
-        auth()->logout();
+        auth()->guard('api')->logout();
         return redirect('/');
     }
 }

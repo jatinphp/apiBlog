@@ -23,16 +23,15 @@
 
                 </div>
                 <hr>
-
                 <div class="comments">
                     <h5> Comments </h5>
                     <ul class="list-group">
                         @foreach($post->commentsa as $comment)
                            <li class="list-group-item">
-                               <strong>{{ $comment->users->name }}</strong> : &af;
+                               {{$comment->users->name}}: &af;
                                {{$comment->body}}
                            <br>
-                               <small>{{$comment->created_at->diffForHumans()}}  </small>
+                               <small>{{ Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}  </small>
                            </li>
 
                         @endforeach

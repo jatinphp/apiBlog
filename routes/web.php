@@ -17,8 +17,8 @@ Route::get('/posts/create', 'PostsController@create');
 //Route::get('/register', 'RegistrationController@create');
 Route::get('/login', 'SessionsController@create');
 
-/*Route::get('/logout', 'SessionsController@destroy');
-Route::get('/posts/tags/{tag}', 'TagsController@index');
+Route::get('/logout', 'SessionsController@destroy');
+/*Route::get('/posts/tags/{tag}', 'TagsController@index');
 Route::get('/posts/edit/{post}', 'PostsController@edit');
 Route::post('/posts/{id}/edit', 'PostsController@update');
 Route::post('/register', 'RegistrationController@store');

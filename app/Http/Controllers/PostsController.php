@@ -15,8 +15,10 @@ class PostsController extends Controller
     public function __construct()
     {
 
-        $this->middleware('auth:api')->except(['index','show']);
+        $this->middleware('auth:api')->except(['index']);
     }
+
+
 
     public function index()
     {
@@ -34,6 +36,9 @@ class PostsController extends Controller
         $res = $guzzle->request('GET','http://localhost:8887/api/post/'.$id, ['query' =>['api_token' => auth()->guard('api')->user()->api_token]]);
 
         $post = json_decode($res->getBody()->getContents());
+
+        $post = $post->post;
+
         return view('posts.show', compact('post'));
     }
 

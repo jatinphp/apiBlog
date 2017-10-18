@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Comments;
 use App\Posts;
+use GuzzleHttp\Client;
 
 class CommentsController extends Controller
 {
@@ -35,12 +36,21 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Posts $post)
+    public function store($post)
     {
         $this->validate(request(),[
             'body' => 'required|min:10'
         ]);
-        $post->addComments(request('body'));
+        $guzzle = new Client();
+        $postsData = [
+            "body"=> request('body'),
+            "_token"=> request('_token'),
+            "users_id"=> auth()->guard('api')->id(),
+            "post" => $post
+        ];
+
+        $response = $guzzle->post('http://localhost:8887/api/post/comment', ['query' =>['api_token' => auth()->guard('api')->user()->api_token],'form_params'=>$postsData]);
+        $resposed =  json_decode($response->getBody()->getContents());
 
         return back();
     }
